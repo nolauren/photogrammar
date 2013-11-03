@@ -23,13 +23,12 @@ def download_grid_html(this_url):
     try:
         if not os.path.exists(save_to):
             urllib.urlretrieve(this_url, save_to)
-            return ""
         else: 
-            return ""
+            pass
     except IOError:
-        return this_url
+        pass
     except:
-        return this_url
+        pass
 
 
 def load_file_as_soup(file_name):
@@ -92,7 +91,7 @@ def main():
     while not finished_flag:
         # Try to download the urls which do not exist on filesystem
         pool = ThreadPool(processes=10)
-        result = pool.map(download_grid_html, url_list)
+        pool.map(download_grid_html, url_list)
         pool.close()
         del pool
 
