@@ -1,16 +1,17 @@
-import urllib
+import urllib2
 import pickle
 import re
 
 from bs4 import BeautifulSoup
 
-base_path = "/Users/tba3/Desktop/files/fsa_rescrape/"
+verbose = TRUE
+base_path = "/Users/tba3/Desktop/files/photogrammar/"
 loc_url_prefix = "http://www.loc.gov/pictures/collection/fsa/item/"
 
 def load_page_as_soup(page_url):
     """ Loads url in a soup obj; returns None if not succesful """
     try:
-        f = urllib.urlopen(page_url)
+        f = urllib2.urlopen(page_url, timeout=5)
         s = f.read()
         f.close()
         soup = BeautifulSoup(s)
@@ -45,10 +46,10 @@ def main():
         for link in all_links:
             photo_id, this_soup = get_page_w_id(link)
             if this_soup != None:
-                with open(base_path + "img_url/" + photo_id + ".txt", 'w')
+                with open(base_path + "img_url/" + photo_id + ".txt", 'w') as f:
                     these_urls = return_img_urls(this_soup, photo_id)
                     for url in these_urls: f.write(url + "\n")
-                print("Done with photo " + photo_id)        
+                if verbose: print("Done with photo " + photo_id)        
             else:
                 error_links.append(link)
         all_links = error_links
