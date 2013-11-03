@@ -4,7 +4,7 @@ import re
 
 from bs4 import BeautifulSoup
 
-verbose = TRUE
+verbose = True
 base_path = "/Users/tba3/Desktop/files/photogrammar/"
 loc_url_prefix = "http://www.loc.gov/pictures/collection/fsa/item/"
 
