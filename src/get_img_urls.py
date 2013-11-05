@@ -1,12 +1,28 @@
-import urllib2
-import pickle
+#!/usr/bin/env python
+""" Downloads the location of the images hosted on the loc site
+
+Using the photo ids obtained in script01, this downloads and parses
+all of the main image information pages and extracts the location of
+the stored images.
+"""
+
+import os
+import urllib
 import re
+import socket
+import copy
 
+from multiprocessing.pool import ThreadPool
 from bs4 import BeautifulSoup
+# Global variables
+TESTING_FLAG = False
+BASE_PATH = "/Users/tba3/Desktop/files/photogrammar/"
 
-verbose = True
-base_path = "/Users/tba3/Desktop/files/photogrammar/"
-loc_url_prefix = "http://www.loc.gov/pictures/collection/fsa/item/"
+# Meta data
+__author__ = "Taylor B. Arnold"
+__date__ = "3 November 2013"
+__contact__ = "taylor.b.arnold <at> gmail.com"
+__version__  = "0.1.3"
 
 def load_page_as_soup(page_url):
     """ Loads url in a soup obj; returns None if not succesful """
