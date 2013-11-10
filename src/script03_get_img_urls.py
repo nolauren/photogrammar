@@ -14,6 +14,7 @@ import copy
 
 from multiprocessing.pool import ThreadPool
 from bs4 import BeautifulSoup
+
 # Global variables
 TESTING_FLAG = False
 BASE_PATH = "/Users/tba3/Desktop/files/photogrammar/"
@@ -22,7 +23,7 @@ BASE_PATH = "/Users/tba3/Desktop/files/photogrammar/"
 __author__ = "Taylor B. Arnold"
 __date__ = "3 November 2013"
 __contact__ = "taylor.b.arnold <at> gmail.com"
-__version__  = "0.1.3"
+__version__ = "0.1.3"
 
 def get_all_links():
     """ Reads files in photo_ids; returns every available url """

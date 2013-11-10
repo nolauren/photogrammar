@@ -11,8 +11,8 @@ with the LOC site)
 import os
 import urllib
 import re
-import socket
 import copy
+import sys
 
 from multiprocessing.pool import ThreadPool
 from bs4 import BeautifulSoup
@@ -23,13 +23,15 @@ BASE_PATH = "/Users/tba3/Desktop/files/photogrammar/"
 
 # Meta data
 __author__ = "Taylor B. Arnold"
-__date__ = "3 November 2013"
+__date__ = "9 November 2013"
 __contact__ = "taylor.b.arnold <at> gmail.com"
-__version__  = "0.1.3"
+__version__ = "0.1.4"
+
 
 def get_all_links():
     """ Reads files in photo_ids and returns every available url """
     current_id_files = os.listdir(BASE_PATH + "photo_ids")
+
     current_id_files = [BASE_PATH + "photo_ids/" + x for x in current_id_files]
     all_links = []
     for file in current_id_files:
@@ -38,13 +40,15 @@ def get_all_links():
             all_links += x.split("\n")[:20]
     return all_links
 
+
 def download_marc_html(this_link_url):
     """ Downloads a local copy of the marc record matching this_link_url
 
-    The output is saved as an html file on disk in html/marc.
+    The output is saved as an html file on disk in html/marc. If link
+    is already downloaded, this will simply pass over it, so you can
+    safely map this function over all links if restarting.
     """
-    # Convert url (which is to the info page) into 
-    loc_url_prefix = "http://www.loc.gov/pictures/collection/fsa/item/"
+    # Convert url (which is to the info page) into link to marc record
     new_link = re.sub("/collection/fsa", "", this_link_url) + "marc/"
     url_prefix = "http://www.loc.gov/pictures/item/"
     url_suffix = "/PP/marc/"
@@ -58,12 +62,13 @@ def download_marc_html(this_link_url):
     try:
         if not os.path.exists(save_to):
             urllib.urlretrieve(new_link, save_to)
-        else: 
+        else:
             pass
     except IOError:
         pass
     except:
         pass
+
 
 def save_marc_record(this_file):
     """ Turns marc webpage into a csv file and writes to disk
@@ -87,54 +92,59 @@ def save_marc_record(this_file):
                     f.write(u','.join(row_text).encode('utf-8'))
                     f.write('\n')
 
+
 def check_records(all_links):
-    """ Checks that there exists a marc record csv for every file in all_links
+    """ Checks that there exists a marc record html for every file in all_links
 
     The function returns, in the same format, the subset of all_links which
     have not yet been properly created as a csv file.
     """
-    finished_marc_records = os.listdir(BASE_PATH + "marc_records")
+    finished_marc_records = os.listdir(BASE_PATH + "html/marc")
     all_links_names = []
     url_prefix = "http://www.loc.gov/pictures/collection/fsa/item/"
     url_suffix = "/PP"
     for link in all_links:
-        regex = re.compile("("+url_prefix+")|("+url_suffix+")|(/marc/)|(/)") 
+        regex = re.compile("("+url_prefix+")|("+url_suffix+")|(/marc/)|(/)")
         link = re.sub(regex, "", link)
-        all_links_names.append(link + ".csv")
+        all_links_names.append(link + ".html")
     set_diff = list(set(all_links_names) - set(finished_marc_records))
-    set_diff = [re.sub("\.csv", "", x) for x in set_diff]
-    set_diff = [url_prefix + x + url_suffix + "/" for x in set_diff] 
+    set_diff = [re.sub("\.html", "", x) for x in set_diff]
+    set_diff = [url_prefix + x + url_suffix + "/" for x in set_diff]
     return set_diff
+
 
 def process_these_marc_urls(links):
     """ Process all raw marc urls in 'links' """
-    these_links = copy.copy(links)
-    while these_links:
-        # Download a local copy of the marc record html files
-        pool = ThreadPool(processes=5)
-        pool.map(download_marc_html, these_links)
-        pool.close()
-        del pool
+    these_links = check_records(copy.copy(links))
+    try:
+        while these_links:
+            # Download a local copy of the marc record html files
+            pool = ThreadPool(processes=50)
+            pool.map(download_marc_html, these_links)
+            pool.close()
+            del pool
 
+            # Check if all records in all_links are downloaded
+            these_links = check_records(links)
+    except KeyboardInterrupt:
+        raise
+    except:
+        sys.exit()
+    else:
         # Parse marc html files; save as csv
         marc_files = os.listdir(BASE_PATH + "/html/marc")
         for this_file in marc_files:
             save_marc_record(this_file)
 
-        # Check if all records in all_links are parsed
-        these_links = check_records(links)
-
-def main():
+def main(testing_flag):
     """ Run all marc records or a test set of these """
     all_links = get_all_links()
     if len(all_links) != 175320:
         print("Warning: Not all links have been scraped!")
-    if TESTING_FLAG:
-        all_links = all_links[:50] 
+    if testing_flag:
+        all_links = all_links[:50]
     process_these_marc_urls(all_links)
 
+
 if __name__ == "__main__":
-    main()
-
-
-
+    main(TESTING_FLAG)

@@ -25,6 +25,7 @@ __contact__ = "taylor.b.arnold <at> gmail.com"
 __version__  = "0.1.3"
 
 class MarcClassificationFormat(object):
+    """ Object to represent a field in the marc record """
     def __init__(self, val1, val2 = "", val3 = "", val4 = ""):
         self.val1 = val1
         self.val2 = val2
@@ -44,6 +45,7 @@ class MarcClassificationFormat(object):
             raise ValueError("Non-unique rows specified")
 
 class MarcRecord(object):
+    """ Class for individual marc record objects """
     def __init__(self, path):
         self.path = path
         data = pd.read_csv(path, header=None, dtype=str,
@@ -69,7 +71,7 @@ photographer.get_attr(data)
 
 
 def main():
-    """ Downloads the marc records for urls in pickle/all_urls.p """
+    """ Creates one master marc csv for all needed fields """
     pass
 
 
