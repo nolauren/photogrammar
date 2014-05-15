@@ -116,7 +116,7 @@ def process_these_id_urls(index_list, testing_flag, base_path):
         # Try to download the current set of urls
         pool = ThreadPool(processes=10)
         socket.setdefaulttimeout(10)
-        pool.map(download_grid_html, url_list, base_path)
+        pool.map(download_grid_html, url_list)
         pool.close()
         del pool
 
