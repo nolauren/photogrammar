@@ -22,3 +22,5 @@ python src/get_img_urls.py
 Which will create text files in the directory 'img_url' such as 'img_url/fsa1997000987.txt' which contain the urls
 of the photo images. 
 
+**
+
