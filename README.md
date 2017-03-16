@@ -4,7 +4,7 @@ photogrammar
 Code for getting and exploring the photogrammar data.
 
 For example, we download a list of all the photo ids (these uniquely define
-the urls for scraping the rest of the data, by running the following code:
+urls for scraping the rest of the data, by running the following code:
 
 ```shell
 python src/get_photo_ids.py
@@ -21,4 +21,6 @@ python src/get_img_urls.py
 ```
 Which will create text files in the directory 'img_url' such as 'img_url/fsa1997000987.txt' which contain the urls
 of the photo images. 
+
+
 
